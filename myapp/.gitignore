@@ -1,0 +1,34 @@
+*.pyc
+media/
+/env
+/conf
+/__pycache__/**
+
+# Node stuff
+lambdas/pdf_generator/node_modules
+lambdas/pdf_generator/*.zip
+lambdas/garmin_pull/env
+lambdas/garmin_pull/*.zip
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+
+tymewear/apps/main/example_test_xl.json
+
+tymewear/settings/development.py
+tymewear/settings/production.py
+tymewear/settings/settings.py
+
+# IDE
+.idea
+.vscode
+
+*.pyc
+**/migrations/*.__pycache__
+**/migrations/__pycache__/*.pyc
+*Zone.Identifier
+
+*.pem
+
