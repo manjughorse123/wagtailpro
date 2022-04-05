@@ -1,4 +1,6 @@
 
+from re import template
+from statistics import mode
 from django.shortcuts import render
 from django.db import models
 
@@ -111,6 +113,7 @@ class BlogListingPage(RoutablePageMixin,Page):
         context["posts"]= BlogDetailPage.objects.live().public()
         # context["a_special_link"] = self.reverse_subpage('latest_posts')
         context["authors"]= BlogAuthor.objects.all()
+        context['categories'] = BlogCategory.objects.all()
         return context
 
     @route(r'^latest/$', name='latest_posts')
@@ -135,7 +138,8 @@ class BlogListingPage(RoutablePageMixin,Page):
         return sitemap
 
 class BlogDetailPage(Page):
-    """ Blog Detail Page"""
+    """ Parental Blog Detail Page"""
+
     template = "blog/blog_detail_page.html"
     custom_title = models.CharField(
         max_length=100,
@@ -144,7 +148,7 @@ class BlogDetailPage(Page):
         help_text = "Overwrites the default title",
 
     )
-    blog_image = models.ForeignKey(
+    banner_image = models.ForeignKey(
         "wagtailimages.Image",
         blank =False,
         null =True,
@@ -170,7 +174,7 @@ class BlogDetailPage(Page):
 
     content_panels = Page.content_panels + [
         FieldPanel("custom_title"),
-        ImageChooserPanel("blog_image"),
+        ImageChooserPanel("banner_image"),
         MultiFieldPanel(
             [
                 InlinePanel("blog_authors",label="author",min_num=1,max_num= 4)
@@ -186,3 +190,75 @@ class BlogDetailPage(Page):
         StreamFieldPanel("content")
 
     ]
+
+
+# first subclass blog post
+class ArticleBlogPage(BlogDetailPage):
+    """" A subclas bog pst page"""
+
+    template = "blog/article_blog_page.html"
+    subtitle = models.CharField(
+        max_length=100, 
+        default=True,
+        null=True)
+    intro_image = models.ForeignKey(
+        "wagtailimages.Image",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        help_text = "Best Size for this image will be 1400x400"
+
+    ) 
+
+    content_panels = Page.content_panels + [
+        FieldPanel("custom_title"),
+        FieldPanel("subtitle"),
+        ImageChooserPanel("banner_image"),
+        ImageChooserPanel("intro_image"),
+        MultiFieldPanel(
+            [
+                InlinePanel("blog_authors",label="author",min_num=1,max_num= 4)
+            ],
+            heading="Author(s)"
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel("categories",widget=forms.CheckboxSelectMultiple )
+            ],
+            heading="Categories"
+        ),
+        StreamFieldPanel("content")
+
+    ]
+
+# second Subclass page
+class VideoBlogPage(BlogDetailPage):
+    """ A vedio subclass page"""
+    template = "blog/vedio_blog_page.html"
+    youtube_vedio_id = models.CharField(
+        max_length=30,
+        null=True,
+        blank=True,
+    )
+
+    content_panels = Page.content_panels + [
+        FieldPanel("custom_title"),  
+        
+        ImageChooserPanel("banner_image"), 
+        MultiFieldPanel(
+            [
+                InlinePanel("blog_authors",label="author",min_num=1,max_num= 4)
+            ],
+            heading="Author(s)"
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel("categories",widget=forms.CheckboxSelectMultiple )
+            ],
+            heading="Categories"
+        ),
+        FieldPanel("youtube_vedio_id"),
+        StreamFieldPanel("content")
+
+    ]
+

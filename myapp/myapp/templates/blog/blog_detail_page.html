@@ -5,7 +5,7 @@
 
 
 {% block content %}
-    {% image self.blog_image fill-900x400 as banner %}
+    {% image self.banner_image fill-900x400 as banner %}
     <img src="{{ banner.url }}" alt = "{{ banner.alt }}" style='width: 100%; height:auto;'>
     <div class="container mt-5 mb-5">
         <div class="text-center">
@@ -29,7 +29,16 @@
             </ul>
     </div>
 
-    
+    <h2> Categories</h2>
+    <ul>
+        {% for cat in self.categories.all %}
+        <li>
+            <a href="{{ self.get_parent.url }}?category={{ cat.slug }}">
+                {{cat.name}}
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
 
     <div class="container">
         <div class='row'>
