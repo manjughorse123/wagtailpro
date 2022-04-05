@@ -1,7 +1,5 @@
-
-from re import template
-from statistics import mode
 from django.shortcuts import render
+from django.core.paginator import EmptyPage,PageNotAnInteger, Paginator
 from django.db import models
 
 from django import forms
@@ -110,7 +108,18 @@ class BlogListingPage(RoutablePageMixin,Page):
     
     def get_context(self, request, *args, **kargs):
         context = super().get_context(request, *args,**kargs)
-        context["posts"]= BlogDetailPage.objects.live().public()
+        all_posts= BlogDetailPage.objects.live().public().order_by('-first_published_at')
+        paginator = Paginator(all_posts,2)# @todo change to 5 per page
+        page = request.GET.get("page")
+        try:
+            posts = paginator.page(page)
+        except PageNotAnInteger:
+            posts = paginator.page(1)
+        except EmptyPage:
+            posts = paginator.page(paginator.num_pages)
+        
+        context["posts"]=posts 
+
         # context["a_special_link"] = self.reverse_subpage('latest_posts')
         context["authors"]= BlogAuthor.objects.all()
         context['categories'] = BlogCategory.objects.all()
@@ -120,7 +129,7 @@ class BlogListingPage(RoutablePageMixin,Page):
     def latest_blog_post(self,request,*args,**kwargs):
         context = self.get_context(request,*args,**kwargs)
         # context["latest_posts"] = BlogDetailPage.objects.live().public()[:1]
-        # context["name"] = "MAnju Ghorse"
+        # context["name"] = "Manju Ghorse"
         # context["website"] = "Learnwagtail.com"
         context['posts'] = context['posts'][:1]
         return render(request, "blog/latest_posts.html", context)
