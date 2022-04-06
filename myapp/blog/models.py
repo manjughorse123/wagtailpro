@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from django.core.cache import cache
+from django.core.cache.utils import make_template_fragment_key
 from django.core.paginator import EmptyPage,PageNotAnInteger, Paginator
 from django.db import models
 
@@ -199,6 +201,18 @@ class BlogDetailPage(Page):
         StreamFieldPanel("content")
 
     ]
+
+    def save(self,* args,**kwargs):
+        
+        key = make_template_fragment_key(
+            "blog_post_preview",
+            [self.id]
+        )
+       
+        cache.delete(key)
+
+        return super().save(*args,**kwargs)
+
 
 
 # first subclass blog post
