@@ -13,9 +13,24 @@ from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.core.fields import StreamField
 from wagtail.snippets.models import register_snippet
 from wagtail.contrib.routable_page.models import RoutablePageMixin,route
-from streams import blocks
+from wagtail.api import APIField
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
+from streams import blocks
+
+from rest_framework.fields import Field
+
+class ImageSerializedField(Field):
+
+    def to_representation(self, value):
+        return {
+            "url": value.file.url,
+            "title":value.title,
+            "width":value.width,
+            "height":value.height,
+        }
+
+
 
 class BlockAuthorsOrderable(Orderable):
 
@@ -28,6 +43,25 @@ class BlockAuthorsOrderable(Orderable):
 
     panels = [
         SnippetChooserPanel("author")
+    ]
+
+    @property
+    def author_name(self):
+        return self.author_name
+    
+    @property
+    def author_website(self):
+        return self.author_website
+    
+    @property
+    def author_image(self):
+        return self.author_image
+
+
+    api_fields = [
+        APIField("author_name"),
+        APIField("author_website"),
+        APIField("author_image", serializer = ImageSerializedField()),
     ]
 
 
@@ -183,6 +217,7 @@ class BlogDetailPage(Page):
 
     )
 
+
     content_panels = Page.content_panels + [
         FieldPanel("custom_title"),
         ImageChooserPanel("banner_image"),
@@ -200,6 +235,11 @@ class BlogDetailPage(Page):
         ),
         StreamFieldPanel("content")
 
+    ]
+
+    api_fields = [
+        APIField("blog_authors"),
+        APIField("content"),
     ]
 
     def save(self,* args,**kwargs):

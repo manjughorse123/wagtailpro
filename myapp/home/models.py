@@ -1,13 +1,13 @@
 from django.shortcuts import render
 from django.db import models
-
+from wagtail.api import APIField
 from wagtail.core.models import Page, Orderable
-from wagtail.core.fields import RichTextField
+from wagtail.core.fields import RichTextField,StreamField
 from wagtail.admin.edit_handlers import FieldPanel,PageChooserPanel,InlinePanel
 from wagtail.images.edit_handlers import ImageChooserPanel
 from modelcluster.models import ParentalKey
 from wagtail.contrib.routable_page.models import RoutablePageMixin, route
-
+from streams import blocks
 
 class HomePageCarouselImages(Orderable):
 
@@ -22,6 +22,13 @@ class HomePageCarouselImages(Orderable):
     Panels = [
         ImageChooserPanel("carousel_image")
     ]
+
+    api_fields = [
+        APIField("carousel_image"),
+        APIField("a_different_field_name"),
+       
+    ]
+
 
 class HomePage(RoutablePageMixin,Page):
     """Home page Model """
@@ -44,6 +51,21 @@ class HomePage(RoutablePageMixin,Page):
         related_name="+"
 
     )
+    content = StreamField([
+        ("cta", blocks.CTABlock()),
+    ],null=True,blank=True)
+
+    api_fields = [
+        APIField("banner_title"),
+        APIField("banner_subtitle"),
+        APIField("banner_image"),
+        APIField("banner_cta"),
+        APIField("carousel_images"),
+        APIField("content"),
+        
+
+    ]
+
 
     content_panels = Page.content_panels + [
         FieldPanel("banner_title"),

@@ -49,6 +49,9 @@ INSTALLED_APPS = [
     'wagtail.search',
     'wagtail.admin',
     'wagtail.core',
+    'wagtail.api.v2',
+    # ...
+    
 
     'modelcluster',
     'taggit',
@@ -62,7 +65,13 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
 
     'captcha',
-    'wagtailcaptcha'
+    'wagtailcaptcha',
+    'rest_framework',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.facebook',
 ]
 
 MIDDLEWARE = [
@@ -97,6 +106,18 @@ TEMPLATES = [
         },
     },
 ]
+
+
+AUTHENTICATION_BACKENDS = [
+    
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+SITE_ID =1
 
 WSGI_APPLICATION = 'myapp.wsgi.application'
 
@@ -190,3 +211,17 @@ BASE_URL = 'http://example.com'
 RECAPTCHA_PUBLIC_KEY = '6Ld0VU0fAAAAAIiYFf6Ek9WU3KL7zGIPTUnNLeFY'
 RECAPTCHA_PRIVATE_KEY = '6Ld0VU0fAAAAAAT1j_6BsPKVzUXuy2vaTmxAhQgZ'
 NOCAPTCHA = True
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL ='/'
+ACCOUNT_AUTHENTICATION_METHOD= "username_email"
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+ACCOUNT_EMAIL_REQUIRED = False
+# ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
+ACCOUNT_LOGOUT_ON_GET =True
+ACCOUNT_LOGOUT_REDIRECT_URL ='/'
+ACCOUNT_PRESERVE_USERNAME_CASING = False
+ACCOUNT_SESSION_REMEMBER  = True
+ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
+
